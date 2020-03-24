@@ -1,4 +1,4 @@
-package app.com.alex.json.elements;
+package com.alex.json.elements;
 
 public interface Json {
     public JsonElement[] getElements();

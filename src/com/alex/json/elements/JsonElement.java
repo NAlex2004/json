@@ -1,4 +1,4 @@
-package app.com.alex.json.elements;
+package com.alex.json.elements;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,9 +6,9 @@ import java.util.List;
 
 public class JsonElement {
     private String key;
-    private Object value;
+    private JsonValue value;
 
-    public JsonElement(String key, Object value) {
+    public JsonElement(String key, JsonValue value) {
         // ToDo: may be check key for null?
         this.key = key;
         this.value = value;
@@ -18,22 +18,18 @@ public class JsonElement {
         return key;
     }
 
-    public Object getValue() {
+    public JsonValue getJsonValue() {
         return value;
     }
 
-    public List<String> getValueLines() {
-        return getValueLines(0);
-    }
-
-    public List<String> getValueLines(int tabCount) {
-        tabCount = Math.max(0, tabCount);                
-        char[] tabs = new char[tabCount];
-        Arrays.fill(tabs, '\t');
+    public String[] getLines() {
+        // tabCount = Math.max(0, tabCount);                
+        // char[] tabs = new char[tabCount];
+        // Arrays.fill(tabs, '\t');
         
         List<String> lines = new ArrayList<>();
         // ToDo: create lines if value is json object or array
         
-        return lines;
+        return lines.toArray(new String[0]);
     }
 }

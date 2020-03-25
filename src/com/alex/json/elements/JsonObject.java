@@ -3,7 +3,10 @@ package com.alex.json.elements;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import com.alex.json.interfaces.Json;
+import com.alex.json.interfaces.JsonComplexValue;
+import com.alex.json.interfaces.JsonValue;
 
 public class JsonObject implements Json, JsonComplexValue {
     private JsonElement[] elements;
@@ -21,7 +24,7 @@ public class JsonObject implements Json, JsonComplexValue {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (String str: getLines()) {
-            sb.append(str);
+            sb.append(str).append(System.lineSeparator());
         }
 
         return sb.toString();
@@ -33,12 +36,11 @@ public class JsonObject implements Json, JsonComplexValue {
         StringBuilder sb = new StringBuilder();        
         lines.add("{");
 
-        // may be we can just use string here..
         for (JsonElement element : elements) {
             sb.append('\t')
                 .append(element.getKey()).append(" : ");
-            // ToDo: move values to helper
-            String[] valueLines = element.getLines();
+            
+            String[] valueLines = element.getJsonValue().getLines();
             for (int i = 0; i < valueLines.length; i++) {                
                 sb.append(valueLines[i]);
                 if (i < valueLines.length - 1) {

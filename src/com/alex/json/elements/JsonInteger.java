@@ -1,5 +1,7 @@
 package com.alex.json.elements;
 
+import com.alex.json.interfaces.JsonValue;
+
 public class JsonInteger implements JsonValue {
     private final int value;
 

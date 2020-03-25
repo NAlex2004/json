@@ -1,5 +1,7 @@
 package com.alex.json.elements;
 
+import com.alex.json.interfaces.JsonValue;
+
 public class JsonString implements JsonValue {
     private final String value;
 
@@ -9,7 +11,7 @@ public class JsonString implements JsonValue {
 
     @Override
     public String[] getLines() {
-        return new String[] { value };
+        return new String[] { "\"value\"" };
     }
 
     @Override

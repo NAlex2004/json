@@ -1,8 +1,6 @@
 package com.alex.json.elements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.alex.json.interfaces.JsonValue;
 
 public class JsonElement {
     private String key;
@@ -20,16 +18,5 @@ public class JsonElement {
 
     public JsonValue getJsonValue() {
         return value;
-    }
-
-    public String[] getLines() {
-        // tabCount = Math.max(0, tabCount);                
-        // char[] tabs = new char[tabCount];
-        // Arrays.fill(tabs, '\t');
-        
-        List<String> lines = new ArrayList<>();
-        // ToDo: create lines if value is json object or array
-        
-        return lines.toArray(new String[0]);
     }
 }

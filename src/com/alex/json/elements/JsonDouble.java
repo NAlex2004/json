@@ -1,5 +1,7 @@
 package com.alex.json.elements;
 
+import com.alex.json.interfaces.JsonValue;
+
 public class JsonDouble implements JsonValue {
     private final double value;
 

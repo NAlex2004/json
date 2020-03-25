@@ -1,5 +1,7 @@
 package com.alex.json.elements;
 
+import com.alex.json.interfaces.JsonValue;
+
 public class JsonBoolean implements JsonValue {
     private final boolean value;
 

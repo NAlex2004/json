@@ -4,7 +4,7 @@ import com.alex.json.interfaces.JsonComplexValue;
 import com.alex.json.interfaces.JsonStringHelper;
 import com.alex.json.interfaces.JsonValue;
 
-public class JsonArray implements JsonValue, JsonComplexValue {
+public class JsonArray implements JsonComplexValue {
 	private JsonValue[] items;
 
 	public JsonArray(JsonValue[] items) {

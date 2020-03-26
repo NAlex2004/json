@@ -1,5 +1,5 @@
 package com.alex.json.interfaces;
 
-public interface JsonComplexValue {
+public interface JsonComplexValue extends JsonValue {
     public JsonValue[] getValues();    
 }

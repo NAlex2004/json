@@ -33,4 +33,9 @@ public class JsonObject implements Json, JsonComplexValue {
 	public JsonValue[] getValues() {
 		return Arrays.stream(elements).map(el -> el.getJsonValue()).toArray(JsonValue[]::new);
 	}
+
+	@Override
+	public Object getValue() {		
+		return elements;
+	}
 }

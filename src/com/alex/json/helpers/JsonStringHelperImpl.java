@@ -65,20 +65,24 @@ public class JsonStringHelperImpl implements JsonStringHelper {
 		StringBuilder sb = new StringBuilder();        
 		lines.add("{");
 
-		for (JsonElement element : elements) {
+		for (int elementIndex = 0; elementIndex < elements.length; elementIndex++) {
 			sb.append('\t')
-			.append('"').append(element.getKey()).append('"').append(" : ");
+			.append('"').append(elements[elementIndex].getKey()).append('"').append(" : ");
 
-			String[] valueLines = element.getJsonValue().getLines(this);
+			String[] valueLines = elements[elementIndex].getJsonValue().getLines(this);
 			for (int i = 0; i < valueLines.length; i++) {                
+				if (i > 0 && valueLines.length > 1) {
+					sb.append("\t");
+				}
 				sb.append(valueLines[i]);
-				if (i < valueLines.length - 1) {
+
+				if (elementIndex < elements.length - 1) {
 					sb.append(", ");
 				}
+				
 				lines.add(sb.toString());
-				sb.setLength(0);
-				sb.append("\t");
-			}                
+				sb.setLength(0);				
+			}                					
 		}
 
 		lines.add("}");

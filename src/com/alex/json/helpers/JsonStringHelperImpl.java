@@ -67,7 +67,7 @@ public class JsonStringHelperImpl implements JsonStringHelper {
 
 		for (JsonElement element : elements) {
 			sb.append('\t')
-			.append(element.getKey()).append(" : ");
+			.append('"').append(element.getKey()).append('"').append(" : ");
 
 			String[] valueLines = element.getJsonValue().getLines(this);
 			for (int i = 0; i < valueLines.length; i++) {                

@@ -7,7 +7,7 @@ public class JsonElement {
 	private JsonValue value;
 
 	public JsonElement(String key, JsonValue value) {
-		// ToDo: may be check key for null?
+		// TODO: may be check key for null?
 		this.key = key;
 		this.value = value;
 	}

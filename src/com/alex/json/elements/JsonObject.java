@@ -1,11 +1,10 @@
 package com.alex.json.elements;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.alex.json.interfaces.Json;
 import com.alex.json.interfaces.JsonComplexValue;
+import com.alex.json.interfaces.JsonStringHelper;
 import com.alex.json.interfaces.JsonValue;
 
 public class JsonObject implements Json, JsonComplexValue {
@@ -21,40 +20,13 @@ public class JsonObject implements Json, JsonComplexValue {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (String str: getLines()) {
-			sb.append(str).append(System.lineSeparator());
-		}
-
-		return sb.toString();
+	public String toJsonString(JsonStringHelper helper) {
+		return helper.toJsonString(this);
 	}
 
 	@Override
-	public String[] getLines() {
-		List<String> lines = new ArrayList<>();
-		StringBuilder sb = new StringBuilder();        
-		lines.add("{");
-
-		for (JsonElement element : elements) {
-			sb.append('\t')
-			.append(element.getKey()).append(" : ");
-
-			String[] valueLines = element.getJsonValue().getLines();
-			for (int i = 0; i < valueLines.length; i++) {                
-				sb.append(valueLines[i]);
-				if (i < valueLines.length - 1) {
-					sb.append(", ");
-				}
-				lines.add(sb.toString());
-				sb.setLength(0);
-				sb.append("\t");
-			}                
-		}
-
-		lines.add("}");
-
-		return lines.toArray(new String[0]);
+	public String[] getLines(JsonStringHelper helper) {
+		return helper.getLines(this);
 	}
 
 	@Override

@@ -4,9 +4,9 @@ import com.alex.json.interfaces.JsonStringHelper;
 import com.alex.json.interfaces.JsonValue;
 
 public class JsonInteger implements JsonValue {
-    private final int value;
+    private final long value;
 
-    public JsonInteger(int value) {
+    public JsonInteger(long value) {
         this.value = value;
     }
 

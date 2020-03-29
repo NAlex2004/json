@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.alex.json.elements.JsonArray;
 import com.alex.json.elements.JsonBoolean;
+import com.alex.json.elements.JsonDouble;
 import com.alex.json.elements.JsonElement;
 import com.alex.json.elements.JsonInteger;
 import com.alex.json.elements.JsonNull;
@@ -21,46 +22,49 @@ public class JsonStringParser implements JsonParser {
     private static final char OBJECT_CLOSE_BRACKET = '}';
     private static final char ARRAY_OPEN_BRACKET = '[';
     private static final char ARRAY_CLOSE_BRACKET = ']';
-    private static final char KEY_BRACKET = '"';
+    private static final char KEY_QUOTA = '"';
     private static final char ESCAPE_CHAR = '\\';
     private static final char KEY_VALUE_DELIMETER = ':';
 
-    private JsonValue readNumber() {
-        return null;
+    private boolean isValidNumberChar(char ch) {
+		return (ch == '-' 
+				|| ch == '+' 
+				|| ch == '.' 
+				|| Character.isDigit(ch) 
+				|| Character.toLowerCase(ch) == 'e');
+	}
+    
+    private JsonValue readNumber() throws InvalidJsonException {    	
+    	int startIndex = index;
+    	while (index < sourceLength && isValidNumberChar(source.charAt(index))) {
+			index++;
+		}
+    	String str = source.substring(startIndex, index);
+    	try {
+        	double number = Double.valueOf(str);			
+        	
+        	if (!Double.isNaN(number) && !Double.isInfinite(number)) {
+        		if (Math.floor(number) == number) {
+        			return new JsonInteger((long)number);
+        		}
+        		
+        		return new JsonDouble(number);
+        	}
+		} catch (NumberFormatException e) {			
+		}
+
+    	throw new InvalidJsonException("Not a valid number.", startIndex);
     }
 
-    private JsonString readString() {
-        return null;
-    }
-
-    private JsonBoolean readBoolean() {
-        return null;
-    }
-
-    private JsonNull readNull() {
-        return null;
-    }
-
-    private JsonArray readArray() {
-        return null;
-    }
-
-    private JsonValue readValue() {
-        return null;
-    }
-
-    private String readKey() throws InvalidJsonException {
-        skipSpaces();
-        if (source.charAt(index) != KEY_BRACKET) {
-            throw new InvalidJsonException("Object key does not have quota/quotas.");
-        }
-        
-        index++;
-        int startIndex = index;        
+    /**
+     * Reads string value. index must be after open quotas.
+     */
+    private String readStringInQuotas() {
+    	int startIndex = index;        
         boolean hasEscapeChar = false;
         loop: while (index < sourceLength) {
             switch (source.charAt(index)) {
-                case KEY_BRACKET:
+                case KEY_QUOTA:
                     // skip quotas after escape char
                     if (hasEscapeChar) {
                         hasEscapeChar = false;
@@ -79,12 +83,119 @@ public class JsonStringParser implements JsonParser {
 
             index++;
         }
-        
-        if (startIndex == index - 1) {
-            throw new InvalidJsonException("Empty object key.");
+                
+        return source.substring(startIndex, index - 1);
+	}
+    
+    private JsonString readString() throws InvalidJsonException {
+        if (source.charAt(index) != KEY_QUOTA) {
+            throw new InvalidJsonException("Missing string quotas.", index);
         }
         
-        return source.substring(startIndex, index - 1);
+        index++;
+        String str = readStringInQuotas();        
+        return new JsonString(str);
+    }
+
+    private JsonBoolean readBoolean() throws InvalidJsonException {
+    	int startIndex = index;
+    	while (index < sourceLength && Character.isLetter(source.charAt(index))) {			
+    		index++;
+		}
+    	String str = source.substring(startIndex, index).toLowerCase();
+    	if (str == "true") {
+    		return new JsonBoolean(true);
+    	} else if (str == "false") {
+			return new JsonBoolean(false);
+		}
+    	
+        throw new InvalidJsonException("Not a valid boolean value.", startIndex);
+    }
+
+    private JsonNull readNull() throws InvalidJsonException {
+    	int startIndex = index;
+    	while (index < sourceLength && Character.isLetter(source.charAt(index))) {			
+    		index++;
+		}
+    	String str = source.substring(startIndex, index).toLowerCase();
+    	if (str == "null") {
+    		return new JsonNull();
+    	}
+    	
+    	throw new InvalidJsonException("Not a valid null value", startIndex);
+    }
+
+    private JsonArray readArray() throws InvalidJsonException {
+    	if (source.charAt(index) != ARRAY_OPEN_BRACKET) {
+    		throw new InvalidJsonException("No array open bracket found.", index);
+    	}
+    	index++;
+    	List<JsonValue> values = new ArrayList<>();
+    	boolean lastCharWasComma = false;
+        while (index < sourceLength) {
+            if (source.charAt(index) == ARRAY_CLOSE_BRACKET) {
+                break;
+            }
+            
+            lastCharWasComma = false;            
+            JsonValue value = readValue();
+            values.add(value);
+
+            skipSpaces();
+            if (index >= sourceLength) {
+                throw new InvalidJsonException("Array close bracket is absent.", index);
+            }
+            lastCharWasComma = source.charAt(index) == ',';
+            if (lastCharWasComma) {
+                index++;
+            } else if (source.charAt(index) != ARRAY_CLOSE_BRACKET) {
+				throw new InvalidJsonException("Missing comma between array entries.", index);
+			}
+        }
+        
+        if (lastCharWasComma) {
+            throw new InvalidJsonException("Missing array entry after comma", index);
+        }
+    	return new JsonArray(values.toArray(new JsonValue[0]));
+    }
+
+    private JsonValue readValue() throws InvalidJsonException {
+    	skipSpaces();
+    	if (index >= sourceLength) {
+    		throw new InvalidJsonException("No value found.", index);
+    	}
+    	char currentChar = source.charAt(index);
+    	JsonValue value = null;
+    	if (Character.isDigit(currentChar) || currentChar == '-' || currentChar == '+') {
+    		value = readNumber();
+    	} else if (currentChar == KEY_QUOTA) {
+    		value = readString();
+    	} else if (currentChar == ARRAY_OPEN_BRACKET) {
+			value = readArray();
+		} else if (currentChar == OBJECT_OPEN_BRACKET) {
+			value = readObject();
+		} else if (Character.toLowerCase(currentChar) == 'n') {
+			value = readNull();
+		} else {
+			value = readBoolean();
+		}
+    	return value;
+    }
+
+    private String readKey() throws InvalidJsonException {
+        skipSpaces();
+        if (source.charAt(index) != KEY_QUOTA) {
+            throw new InvalidJsonException("Object key does not have quota/quotas.", index);
+        }
+        
+        index++;
+        String str = readStringInQuotas();
+        
+        if (str.isEmpty()) {
+            throw new InvalidJsonException("Empty object key.", index);
+        }
+        
+        return str;
     }
 
     private void skipSpaces() {
@@ -96,17 +207,17 @@ public class JsonStringParser implements JsonParser {
     private void readKeyValueDelimeter() throws InvalidJsonException {
         skipSpaces();
         if (source.charAt(index) != KEY_VALUE_DELIMETER) {
-            throw new InvalidJsonException("Key-value delimeter (':')not found.");
+            throw new InvalidJsonException("Key-value delimeter (':')not found.", index);
         }
         index++;
         skipSpaces();
     }
 
-    private Json readObject() throws InvalidJsonException {
+    private JsonObject readObject() throws InvalidJsonException {
         List<JsonElement> elements = new ArrayList<>();
         skipSpaces();
         if (source.charAt(index) != OBJECT_OPEN_BRACKET) {
-            throw new InvalidJsonException("Object open bracket is absent.");
+            throw new InvalidJsonException("Object open bracket is absent.", index);
         }
         index++;
         boolean lastCharWasComma = false;
@@ -126,15 +237,18 @@ public class JsonStringParser implements JsonParser {
             // comma or end of object
             skipSpaces();
             if (index >= sourceLength) {
-                throw new InvalidJsonException("Object close bracket is absent.");
+                throw new InvalidJsonException("Object close bracket is absent.", index);
             }
             lastCharWasComma = source.charAt(index) == ',';
             if (lastCharWasComma) {
                 index++;
-            }
+            } else if (source.charAt(index) != OBJECT_CLOSE_BRACKET) {
+				throw new InvalidJsonException("Missing comma between object entries.", index);
+			}
         }
+        
         if (lastCharWasComma) {
-            throw new InvalidJsonException("Missing key-value entry after comma");
+            throw new InvalidJsonException("Missing key-value entry after comma", index);
         }
         return new JsonObject(elements.toArray(new JsonElement[0]));
     }
@@ -143,6 +257,10 @@ public class JsonStringParser implements JsonParser {
         source = jsonString.trim();
     }
 
+    public String getSource() {
+    	return source;
+    }
+    
     public void setSource(String source) {
         if (source != null) {
             this.source = source.trim();
@@ -152,7 +270,7 @@ public class JsonStringParser implements JsonParser {
     @Override
     public Json parse() throws InvalidJsonException {
         if (source == null || source.isEmpty()) {
-             throw new InvalidJsonException("Source is null or empty.");
+             throw new InvalidJsonException("Source is null or empty.", index);
         }
         
         index = 0;

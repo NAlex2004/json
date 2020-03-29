@@ -1,0 +1,19 @@
+{
+	"string" : "another string value", 
+	"int" : 1, 
+	"double" : 5.8, 
+	"boolean" : true, 
+	"array" : [ 55, null, {
+			"string" : "string value", 
+			"int" : 113, 
+			"double" : 54.874, 
+			"null" : null, 
+			"boolean" : true
+		}, "shit", [ 153.24, null, "shit", true ], {
+			"string" : "string value", 
+			"int" : 113, 
+			"double" : 54.874, 
+			"null" : null, 
+			"boolean" : true
+		} ]
+}

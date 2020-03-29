@@ -103,9 +103,9 @@ public class JsonStringParser implements JsonParser {
     		index++;
 		}
     	String str = source.substring(startIndex, index).toLowerCase();
-    	if (str == "true") {
+    	if (str.equalsIgnoreCase("true")) {
     		return new JsonBoolean(true);
-    	} else if (str == "false") {
+    	} else if (str.equalsIgnoreCase("false")) {
 			return new JsonBoolean(false);
 		}
     	
@@ -118,7 +118,7 @@ public class JsonStringParser implements JsonParser {
     		index++;
 		}
     	String str = source.substring(startIndex, index).toLowerCase();
-    	if (str == "null") {
+    	if (str.equalsIgnoreCase("null")) {
     		return new JsonNull();
     	}
     	
@@ -145,6 +145,7 @@ public class JsonStringParser implements JsonParser {
             if (index >= sourceLength) {
                 throw new InvalidJsonException("Array close bracket is absent.", index);
             }
+            char currentChar = source.charAt(index);
             lastCharWasComma = source.charAt(index) == ',';
             if (lastCharWasComma) {
                 index++;
@@ -156,6 +157,7 @@ public class JsonStringParser implements JsonParser {
         if (lastCharWasComma) {
             throw new InvalidJsonException("Missing array entry after comma", index);
         }
+        index++;
     	return new JsonArray(values.toArray(new JsonValue[0]));
     }
 
@@ -250,6 +252,7 @@ public class JsonStringParser implements JsonParser {
         if (lastCharWasComma) {
             throw new InvalidJsonException("Missing key-value entry after comma", index);
         }
+        index++;
         return new JsonObject(elements.toArray(new JsonElement[0]));
     }
 

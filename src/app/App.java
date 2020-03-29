@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import com.alex.json.elements.*;
 import com.alex.json.helpers.JsonStringHelperImpl;
 import com.alex.json.interfaces.*;
+import com.alex.json.parser.JsonParser;
+import com.alex.json.parser.JsonStringParser;
 
 public class App {
     static void testJsonOutput() {
@@ -64,7 +66,7 @@ public class App {
      	
     }
     
-    static void fileToString() {    	    		
+    static String fileToString() {    	    		
 //    	Path path = Paths.get("").toAbsolutePath();
 //		System.out.println(path.toString());
 //		System.out.println(System.getProperty("user.dir"));
@@ -75,14 +77,20 @@ public class App {
 			File file = new File("src/app/file.json");
 			List<String> lines = Files.readAllLines(file.toPath());
 			String str = lines.stream().collect(Collectors.joining(System.lineSeparator()));
-			System.out.println(str);
+			return str;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+    	return "";
     }
     
 	public static void main(String[] args) throws Exception {
-		testJsonOutput();
-		fileToString();
+//		testJsonOutput();
+		String str = fileToString();
+		JsonParser parser = new JsonStringParser(str);
+		Json json = parser.parse();
+		
+		JsonStringHelper stringHelper = new JsonStringHelperImpl();
+		System.out.println(json.toJsonString(stringHelper));
 	}
 }

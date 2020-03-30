@@ -145,7 +145,7 @@ public class JsonStringParser implements JsonParser {
             if (index >= sourceLength) {
                 throw new InvalidJsonException("Array close bracket is absent.", index);
             }
-            char currentChar = source.charAt(index);
+            
             lastCharWasComma = source.charAt(index) == ',';
             if (lastCharWasComma) {
                 index++;

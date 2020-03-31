@@ -1,6 +1,5 @@
 package com.alex.json.interfaces;
 
-public interface JsonValue {
-	public Object getValue();
-	public String[] getLines(JsonStringHelper helper);   
+public interface JsonValue extends Multiline {
+	public Object getValue();   
 }

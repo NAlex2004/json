@@ -7,7 +7,12 @@ public class JsonElement {
 	private JsonValue value;
 
 	public JsonElement(String key, JsonValue value) {
-		// TODO: may be check key for null?
+		if (key == null || key.isEmpty()) {
+			throw new IllegalArgumentException("Key cannot be null or empty.");
+		}
+		if (value == null) {
+			throw new IllegalArgumentException("Value cannot be null.");
+		}
 		this.key = key;
 		this.value = value;
 	}

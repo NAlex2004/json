@@ -8,6 +8,9 @@ public class JsonArray implements JsonComplexValue {
 	private JsonValue[] items;
 
 	public JsonArray(JsonValue[] items) {
+		if (items == null) {
+			throw new IllegalArgumentException("Argument cannot be null.");
+		}
 		this.items = items;
 	}
 

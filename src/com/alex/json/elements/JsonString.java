@@ -7,8 +7,8 @@ public class JsonString implements JsonValue {
     private final String value;
 
     public JsonString(String value) {
-    	if (value == null || value.isEmpty()) {
-    		throw new IllegalArgumentException("Value cannot be null or empty.");
+    	if (value == null) {
+    		throw new IllegalArgumentException("Value cannot be null.");
     	}
         this.value = value;
     }

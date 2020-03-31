@@ -130,6 +130,7 @@ public class JsonStringParser implements JsonParser {
     		throw new InvalidJsonException("No array open bracket found.", index);
     	}
     	index++;
+    	skipSpaces();
     	List<JsonValue> values = new ArrayList<>();
     	boolean lastCharWasComma = false;
         while (index < sourceLength) {
@@ -178,8 +179,10 @@ public class JsonStringParser implements JsonParser {
 			value = readObject();
 		} else if (Character.toLowerCase(currentChar) == 'n') {
 			value = readNull();
-		} else {
+		} else if (Character.toLowerCase(currentChar) == 'f' || Character.toLowerCase(currentChar) == 't') {
 			value = readBoolean();
+		} else {
+			throw new InvalidJsonException("Not a valid value", index);
 		}
     	return value;
     }
@@ -222,6 +225,7 @@ public class JsonStringParser implements JsonParser {
             throw new InvalidJsonException("Object open bracket is absent.", index);
         }
         index++;
+        skipSpaces();
         boolean lastCharWasComma = false;
         while (index < sourceLength) {
             if (source.charAt(index) == OBJECT_CLOSE_BRACKET) {
@@ -278,7 +282,13 @@ public class JsonStringParser implements JsonParser {
         
         index = 0;
         sourceLength = source.length();
-        return readObject();
+        Json object = readObject();
+        skipSpaces();
+        if (index < sourceLength) {
+        	throw new InvalidJsonException("Some chars exists after end of initial object. Only one main object is supported.");
+        }
+        
+        return object;
     }
     
 }

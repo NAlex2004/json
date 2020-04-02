@@ -41,7 +41,7 @@ public class JsonStringParser implements JsonParser {
 		}
     	String str = source.substring(startIndex, index);
     	try {
-        	double number = Double.valueOf(str);			
+        	double number = Double.parseDouble(str);			
         	
         	if (!Double.isNaN(number) && !Double.isInfinite(number)) {
         		if (Math.floor(number) == number) {

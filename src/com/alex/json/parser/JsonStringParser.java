@@ -22,7 +22,7 @@ public class JsonStringParser implements JsonParser {
     private static final char OBJECT_CLOSE_BRACKET = '}';
     private static final char ARRAY_OPEN_BRACKET = '[';
     private static final char ARRAY_CLOSE_BRACKET = ']';
-    private static final char KEY_QUOTA = '"';
+    private static final char KEY_QUOTES = '"';
     private static final char ESCAPE_CHAR = '\\';
     private static final char KEY_VALUE_DELIMETER = ':';
 
@@ -57,15 +57,15 @@ public class JsonStringParser implements JsonParser {
     }
 
     /**
-     * Reads string value. index must be after open quotas.
+     * Reads string value. index must be after open quotes.
      */
-    private String readStringInQuotas() {
+    private String readStringInQuotes() {
     	int startIndex = index;        
         boolean hasEscapeChar = false;
         loop: while (index < sourceLength) {
             switch (source.charAt(index)) {
-                case KEY_QUOTA:
-                    // skip quotas after escape char
+                case KEY_QUOTES:
+                    // skip quotes after escape char
                     if (hasEscapeChar) {
                         hasEscapeChar = false;
                     } else {
@@ -88,12 +88,12 @@ public class JsonStringParser implements JsonParser {
 	}
     
     private JsonString readString() throws InvalidJsonException {
-        if (source.charAt(index) != KEY_QUOTA) {
-            throw new InvalidJsonException("Missing string quotas.", index);
+        if (source.charAt(index) != KEY_QUOTES) {
+            throw new InvalidJsonException("Missing string quotes.", index);
         }
         
         index++;
-        String str = readStringInQuotas();        
+        String str = readStringInQuotes();        
         return new JsonString(str);
     }
 
@@ -171,7 +171,7 @@ public class JsonStringParser implements JsonParser {
     	JsonValue value = null;
     	if (Character.isDigit(currentChar) || currentChar == '-' || currentChar == '+') {
     		value = readNumber();
-    	} else if (currentChar == KEY_QUOTA) {
+    	} else if (currentChar == KEY_QUOTES) {
     		value = readString();
     	} else if (currentChar == ARRAY_OPEN_BRACKET) {
 			value = readArray();
@@ -189,12 +189,12 @@ public class JsonStringParser implements JsonParser {
 
     private String readKey() throws InvalidJsonException {
         skipSpaces();
-        if (source.charAt(index) != KEY_QUOTA) {
-            throw new InvalidJsonException("Object key does not have quota/quotas.", index);
+        if (source.charAt(index) != KEY_QUOTES) {
+            throw new InvalidJsonException("Object key does not have quotes.", index);
         }
         
         index++;
-        String str = readStringInQuotas();
+        String str = readStringInQuotes();
         
         if (str.isEmpty()) {
             throw new InvalidJsonException("Empty object key.", index);

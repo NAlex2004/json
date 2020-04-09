@@ -11,13 +11,12 @@ import com.alex.json.elements.JsonInteger;
 import com.alex.json.elements.JsonNull;
 import com.alex.json.elements.JsonObject;
 import com.alex.json.elements.JsonString;
-import com.alex.json.interfaces.Json;
 import com.alex.json.interfaces.JsonValue;
 
 public class JsonStringParser implements JsonParser {
     private String source;
     private int index = 0;
-    private int sourceLength = 0;
+    private int sourceLength = 0;    
     private static final char OBJECT_OPEN_BRACKET = '{';
     private static final char OBJECT_CLOSE_BRACKET = '}';
     private static final char ARRAY_OPEN_BRACKET = '[';
@@ -58,10 +57,12 @@ public class JsonStringParser implements JsonParser {
 
     /**
      * Reads string value. index must be after open quotes.
+     * @throws InvalidJsonException 
      */
-    private String readStringInQuotes() {
+    private String readStringInQuotes() throws InvalidJsonException {
     	int startIndex = index;        
         boolean hasEscapeChar = false;
+        boolean foundCloseQuote = false;
         loop: while (index < sourceLength) {
             switch (source.charAt(index)) {
                 case KEY_QUOTES:
@@ -70,6 +71,7 @@ public class JsonStringParser implements JsonParser {
                         hasEscapeChar = false;
                     } else {
                         index++;
+                        foundCloseQuote = true;
                         break loop;
                     }
                     break;
@@ -83,7 +85,9 @@ public class JsonStringParser implements JsonParser {
 
             index++;
         }
-                
+        if (!foundCloseQuote) {
+        	throw new InvalidJsonException("No close quote for string found.", index);
+        }
         return source.substring(startIndex, index - 1);
 	}
     
@@ -133,8 +137,10 @@ public class JsonStringParser implements JsonParser {
     	skipSpaces();
     	List<JsonValue> values = new ArrayList<>();
     	boolean lastCharWasComma = false;
+    	boolean foundCloseBracket = false;
         while (index < sourceLength) {
             if (source.charAt(index) == ARRAY_CLOSE_BRACKET) {
+            	foundCloseBracket = true;
                 break;
             }
             
@@ -159,6 +165,9 @@ public class JsonStringParser implements JsonParser {
             throw new InvalidJsonException("Missing array entry after comma", index);
         }
         index++;
+        if (!foundCloseBracket) {
+        	throw new InvalidJsonException("Array close bracket is absent.", index);
+        }
     	return new JsonArray(values.toArray(new JsonValue[0]));
     }
 
@@ -222,13 +231,23 @@ public class JsonStringParser implements JsonParser {
         List<JsonElement> elements = new ArrayList<>();
         skipSpaces();
         if (source.charAt(index) != OBJECT_OPEN_BRACKET) {
-            throw new InvalidJsonException("Object open bracket is absent.", index);
+        	try {
+				JsonValue array = readArray();
+				JsonObject object = new JsonObject(new JsonElement[] { new JsonElement("", array) });
+				return object;
+				
+			} catch (InvalidJsonException e) {
+				throw new InvalidJsonException("Object open bracket is absent.", index);
+			}
+            
         }
         index++;
         skipSpaces();
         boolean lastCharWasComma = false;
+        boolean foundCloseBracket = false;
         while (index < sourceLength) {
             if (source.charAt(index) == OBJECT_CLOSE_BRACKET) {
+            	foundCloseBracket = true;
                 break;
             }
             
@@ -257,6 +276,9 @@ public class JsonStringParser implements JsonParser {
             throw new InvalidJsonException("Missing key-value entry after comma", index);
         }
         index++;
+        if (!foundCloseBracket) {
+        	throw new InvalidJsonException("Object close bracket is absent.", index);
+        }
         return new JsonObject(elements.toArray(new JsonElement[0]));
     }
 
@@ -275,20 +297,21 @@ public class JsonStringParser implements JsonParser {
     }
 
     @Override
-    public Json parse() throws InvalidJsonException {
+    public JsonValue parse() throws InvalidJsonException {
         if (source == null || source.isEmpty()) {
              throw new InvalidJsonException("Source is null or empty.", index);
         }
         
         index = 0;
-        sourceLength = source.length();
-        Json object = readObject();
+        sourceLength = source.length();               
+        
+        JsonValue jsonValue = readValue();        
         skipSpaces();
         if (index < sourceLength) {
         	throw new InvalidJsonException("Some chars exists after end of initial object. Only one main object is supported.");
         }
         
-        return object;
+        return jsonValue;
     }
     
 }

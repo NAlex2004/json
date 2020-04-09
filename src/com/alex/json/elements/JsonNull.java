@@ -14,5 +14,10 @@ public class JsonNull implements JsonValue {
 	public Object getValue() {
 		return "null";
 	}
+
+	@Override
+	public String toJsonString(JsonStringHelper helper) {
+		return helper.toJsonString(this);
+	}
     
 }

@@ -75,7 +75,7 @@ public class App {
 		String str = fileToString("src/app/file.json");
 		JsonParser parser = new JsonStringParser(str);
 		try {
-			Json json = parser.parse();	
+			JsonValue json = parser.parse();	
 			JsonStringHelper stringHelper = new JsonStringHelperImpl();
 			System.out.println(json.toJsonString(stringHelper));
 		} catch (InvalidJsonException e) {

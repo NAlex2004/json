@@ -90,14 +90,33 @@ public class JsonStringHelperImpl implements JsonStringHelper {
 		return lines.toArray(new String[0]);
 	}
 
-	@Override
-	public String toJsonString(JsonObject value) {
-		StringBuilder sb = new StringBuilder();
-		String[] lines = value.getLines(this);
-		for (String str: lines) {
+	private String arrayToString(String[] array) {
+		StringBuilder sb = new StringBuilder();		
+		for (String str: array) {
 			sb.append(str).append(System.lineSeparator());
 		}
 
 		return sb.toString();
+	}
+	
+	// TODO: check with only JsonValue method, may be don't need others
+	@Override
+	public String toJsonString(JsonObject value) {
+		return arrayToString(value.getLines(this));		
+	}
+
+	@Override
+	public String toJsonString(JsonValue value) {
+		return arrayToString(value.getLines(this));
+	}
+
+	@Override
+	public String toJsonString(JsonString value) {
+		return arrayToString(value.getLines(this));
+	}
+
+	@Override
+	public String toJsonString(JsonArray value) {
+		return arrayToString(value.getLines(this));
 	}
 }

@@ -22,5 +22,10 @@ public class JsonString implements JsonValue {
     public Object getValue() {
         return value;
     }
+
+	@Override
+	public String toJsonString(JsonStringHelper helper) {
+		return helper.toJsonString(this);
+	}
     
 }

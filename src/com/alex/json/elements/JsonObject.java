@@ -2,22 +2,16 @@ package com.alex.json.elements;
 
 import java.util.Arrays;
 
-import com.alex.json.interfaces.Json;
 import com.alex.json.interfaces.JsonComplexValue;
 import com.alex.json.interfaces.JsonStringHelper;
 import com.alex.json.interfaces.JsonValue;
 
-public class JsonObject implements Json, JsonComplexValue {
+public class JsonObject implements JsonComplexValue {
 	private JsonElement[] elements;
 
 	public JsonObject(JsonElement[] elements) {
 		this.elements = elements != null ? elements : new JsonElement[0];
-	}
-
-	@Override
-	public JsonElement[] getElements() {
-		return elements;
-	}
+	}	
 
 	@Override
 	public String toJsonString(JsonStringHelper helper) {
@@ -36,6 +30,10 @@ public class JsonObject implements Json, JsonComplexValue {
 
 	@Override
 	public Object getValue() {		
+		return elements;
+	}
+	
+	public JsonElement[] getElements() {
 		return elements;
 	}
 }

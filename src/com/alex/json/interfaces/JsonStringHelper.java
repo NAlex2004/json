@@ -10,5 +10,8 @@ public interface JsonStringHelper {
 	String[] getLines(JsonArray arrayValue);
 	String[] getLines(JsonObject objectValue);
 	
+	String toJsonString(JsonValue value);
+	String toJsonString(JsonString value);
+	String toJsonString(JsonArray value);
 	String toJsonString(JsonObject value);
 }

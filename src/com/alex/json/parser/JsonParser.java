@@ -1,7 +1,7 @@
 package com.alex.json.parser;
 
-import com.alex.json.interfaces.Json;
+import com.alex.json.interfaces.JsonValue;
 
 public interface JsonParser {
-	Json parse() throws InvalidJsonException;
+	JsonValue parse() throws InvalidJsonException;
 }

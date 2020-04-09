@@ -29,4 +29,9 @@ public class JsonArray implements JsonComplexValue {
 		return helper.getLines(this);
 	}
 
+	@Override
+	public String toJsonString(JsonStringHelper helper) {	
+		return helper.toJsonString(this);
+	}
+
 }
